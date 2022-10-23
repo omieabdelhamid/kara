@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Search Clothes</title>
+    <link rel="stylesheet" href="../../Style/main.css">
+    <link rel="stylesheet" href="../../Style/searchClothes.css">
+    <link rel="icon" type="image/x-icon" href="../../Style/images/favicon.png">
+    <script type="module">
+     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+     import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-analytics.js";
+     import { getDatabase, ref , set, query, orderByChild, equalTo, get, onValue } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js";
+     
+    const firebaseConfig = {
+        apiKey: "AIzaSyDV0CfJW69B2rLY8vzzkUd1pZeOCVH-Tjk",
+        authDomain: "cs32-term-project-31ba1.firebaseapp.com",
+        databaseURL: "https://cs32-term-project-31ba1-default-rtdb.firebaseio.com",
+        projectId: "cs32-term-project-31ba1",
+        storageBucket: "cs32-term-project-31ba1.appspot.com",
+        messagingSenderId: "629420865855",
+        appId: "1:629420865855:web:c16a5566fbf2f6be9d7b8a",
+        measurementId: "G-7M0D1V353T"
+    };
+
+    const app = initializeApp(firebaseConfig)
+    const db = getDatabase(app) // <-- Pass in the initialized app
+
+    let data = null
+
+    const buildTable = () => {
+      const tableHead = document.getElementById("tableHead");
+      const tableBody = document.getElementById("tableBody");
+      tableHead.innerHTML = ""
+      tableBody.innerHTML = ""
+      let keys = Object.keys(data[4])
+      for (let i = 0; i < keys.length; i++) {
+        tableHead.innerHTML += `<th>${keys[i]}</th>`
+      }
+      for (let i = 1; i < data.length; i++) {
+        let keys = Object.keys(data[i])
+        let statement = ""
+        for (let j = 0; j < keys.length; j++) {
+          if (keys[j] === "Image") {
+            statement += `<td><img src="${data[i][keys[j]]}" style="width: 40%"></td>`
+          } else {
+            statement += `<td>${data[i][keys[j]]}</td>`
+          }
+        }
+        tableBody.innerHTML += statement
+      }
+    }
+
+    const recentPostsRef = await get (query(ref(db, '/clothes'))).then((snapshot) => {
+    if (snapshot.exists()) {
+      console.log(snapshot.val());
+      data = snapshot.val();
+      buildTable()
+    } else {
+      console.log("No data available");
+    }
+  })
+    </script>
+
+    <script>
+      let clothes = null
+      let color = null
+      let size = null
+
+      function myFunction(value, col) {
+
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        table = document.getElementById("table");
+        tr = table.getElementsByTagName("tr");
+        let num = null
+        if (value === "null") {
+          value = null
+        }
+
+        if (col === "Article") {
+          num = 0
+          clothes = value
+        }
+
+        if (col === "Color") {
+          num = 1
+          color = value
+        }
+
+        if (col === "Size") {
+          num = 3
+          size = value
+        }
+
+        // Loop through all table rows, and hide those who don't match the search query
+          for (i = 0; i < tr.length; i++) {
+            tdClothes = tr[i].getElementsByTagName("td")[0];
+            tdColor = tr[i].getElementsByTagName("td")[1];
+            tdSize = tr[i].getElementsByTagName("td")[3];
+
+            if (tdClothes && tdColor && tdSize) {
+                if (clothes !== null) {
+                  txtValueClothes = tdClothes.textContent || tdClothes.innerText;
+                } else {
+                  txtValueClothes = null
+                }
+                if (color !== null) {
+                  txtValueColor = tdColor.textContent || tdColor.innerText;
+                } else {
+                  txtValueColor = null
+                }
+                if (size !== null) {
+                  txtValueSize = tdSize.textContent || tdSize.innerText;
+                } else {
+                  txtValueSize = null
+                }
+
+                if (txtValueClothes === clothes && txtValueSize === size && txtValueColor === color) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    </script>
+
+  </head>
+
+  <body>
+    <input type="checkbox" id="active">
+    <label for="active" class="menu-btn"><span></span></label>
+    <label for="active" class="close"></label>
+    <div class="wrapper">
+        <ul>
+            <li><a href="../../landing.html" id="homeButton">Home</a></li>
+            <li><a href="https://www.rescue.org/topic/refugee-crisis" id="aboutButton">About</a></li>
+            <li><a href="./residentLookUp.html" id="appointmentsButton">Appointments</a></li>
+            <li><a href="./searchClothes.html" id="backButton">Back</a></li>
+
+        </ul>
+    </div>
+    <div id="searchClothes">
+      <h2 class="inside" id="headers">Search Clothes</h2>
+      
+      <div id="inputWrapper">
+        <div class="searchOption">
+          <label for="type">Choose an article:</label>
+          <select name="type" id="typeClothes1" onchange="myFunction(this.value, 'Article');">
+            <option value="null"></option>
+            <option value="Shirt">Shirt</option>
+            <option value="Shorts">Shorts</option>
+            <option value="Pants">Pants</option>
+            <option value="Jacket">Jacket</option>
+            <option value="Dress">Dress</option>
+            <option value="Scarf">Scarf</option>
+            <option value="Coat">Coat</option>
+          </select>
+        </div>
+
+        <div class="searchOption">
+          <label for="type">Choose a color:</label>
+          <select name="type" id="typeClothes2" onchange="myFunction(this.value, 'Color');">
+            <option value="null"></option>
+            <option value="White">White</option>
+            <option value="Black">Black</option>
+            <option value="Red">Red</option>
+            <option value="Purple">Purple</option>
+            <option value="Yellow">Yellow</option>
+            <option value="Green">Green</option>
+            <option value="Blue">Blue</option>
+            <option value="Grey">Grey</option>
+            <option value="Beige">Beige</option>
+            <option value="Pink">Pink</option>
+          </select>
+        </div>
+
+        <div class="searchOption">
+          <label for="type">Choose a size:</label>
+          <select name="type" id="typeClothes3" onchange="myFunction(this.value, 'Size');">
+            <option value="null"></option>
+            <option value="Small">Small</option>
+            <option value="Medium">Medium</option>
+            <option value="Large">Large</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrapper float">
+        <div class="fl-table">
+          <table id="table">
+            <thead>
+              <tr id="tableHead"></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+	<!-- <script src="../../Script/searchClothes.js"></script> -->
+  </body>
+
+</html>

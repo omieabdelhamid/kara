@@ -1,0 +1,8 @@
+{
+  "name": "term-project-asridh13-easis-jdavis70-mn24-namhaz-oabdelha",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "firebase": "^9.7.0"
+  }
+}

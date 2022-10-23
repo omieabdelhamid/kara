@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="../../Style/main.css">
+    <link rel="stylesheet" href="../../Style/auth.css">
+    <link rel="icon" type="image/x-icon" href="../../Style/images/favicon.png">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.8.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/4.4.0/firebase-ui-auth.js"></script>
+    <title>Sign In</title>
+</head>
+
+<body>
+<input type="checkbox" id="active">
+<label for="active" class="menu-btn"><span></span></label>
+<label for="active" class="close"></label>
+<div class="wrapper">
+    <ul>
+        <li><a href="../../landing.html">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="./storeManagerAuth.html">Back</a></li>
+        <li><a href="./storeManagerAuth.html">Back</a></li>
+
+    </ul>
+</div>
+
+<div class="main box">
+    <div id="modal-signup" class="modal">
+    <p class="sign" id="sign" align="center">Enter Manager Key</p>
+        <br>
+    <form class="signup-form" id="signup-form">
+        <br>
+        <input class="pass" type="password" placeholder="key" id="password">
+        <br>
+        <br>
+        <a href="../manager/storeManagerMain.html" id="submit" class="submit" align="center">Enter</a>
+    </form>
+    </div>
+</div>
+<script type="module">
+    import {getPassword} from "./script/secrets.js";
+    const userPass = document.getElementById('password');
+    document.getElementById('submit').addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log(userPass.value)
+    if (userPass.value === getPassword()) {
+        window.location.replace("../manager/storeManagerMain.html");
+    } else {
+        console.log("wrong password");
+        document.getElementById('sign').style.color = "red";
+        document.getElementById('sign').innerHTML = "Wrong Key";
+    }
+})
+</script>
+</body>
+</html>

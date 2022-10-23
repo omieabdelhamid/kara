@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Store Manager Main</title>
+    <link rel="stylesheet" href="../../Style/main.css">
+    <link rel="stylesheet" href="../../../../../karakaremaster/frontend/landing/Style/selectStyle.css">
+
+    <link rel="stylesheet" href="../../Style/storeManagerMain.css">
+    <link rel="icon" type="image/x-icon" href="../../Style/images/favicon.png">
+    <script src="https://kit.fontawesome.com/7386167f1e.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+</head>
+<body>
+<input type="checkbox" id="active">
+<label for="active" class="menu-btn"><span></span></label>
+<label for="active" class="close"></label>
+<div class="wrapper">
+    <ul>
+        <li><a href="../../landing.html">Home</a></li>
+        <li><a href="https://www.rescue.org/topic/refugee-crisis">About</a></li>
+        <li><a href="./storeManagerMain.html">Back</a></li>
+
+    </ul>
+</div>
+
+<div id="appointments">
+    <h2 class="inside animate__animated animate__fadeInDown  animate__slow" id="head">Manager Appointment Lookup</h2>
+    <br>
+    <input class ="animate__animated animate__fadeIn animate__slow" type="text" id="search-bar" onkeyup= "myFunction()" placeholder="Search by Resident">
+
+
+    <div class="table-wrapper float">
+        <div class="fl-table">
+            <table id="table">
+                <thead>
+                <tr id="tableHead"></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <h4 id="newAppointmentHead">New Appointment</h4>
+            <h1 id="enterInfoBelow">Enter Information Below</h1>
+            <form id="newAppForm">
+                <input  type="text" name="firstName" id ="firstName" placeholder="First Name"/>
+                <input id ="lastName" type="text" name="lastName" placeholder="Last Name"/>
+                <input id ="AppointmentDate" type="text" name="AppointmentDate" placeholder="Appointment Date"/>
+                <input id ="AppointmentTime" type="text" name="AppointmentTime" placeholder="Appointment Time"/>
+                <input id ="itemOne" type="text" name="itemOne" placeholder="Item One"/>
+                <input id = "itemTwo" type="text" name="itemTwo" placeholder="Item Two"/>
+                <input id = "itemThree" type="text" name="itemThree" placeholder="Item Three"/>
+                <button type ="button" class ="trySubmit" id ="trySubmit">submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="myModal2" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <h4 id="newAppointmentHead">New Clothing Item</h4>
+            <h1 id="enterInfoBelow">Enter Information Below</h1>
+            <form id="newAppForm">
+                <input  type="text" name="article" id ="article" placeholder="Article Type"/>
+                <input id ="color" type="text" name="color" placeholder="Color"/>
+                <input id ="image" type="text" name="image" placeholder="Image Link (Upload to ImgBB and copy link)"/>
+                <input id ="size" type="text" name="size" placeholder="Size"/>
+                <button type ="button" class ="trySubmit" id ="trySubmitTwo">submit</button>
+            </form>
+        </div>
+    </div>
+    <br>
+
+    <div class="containedLayout footer card">
+        
+        <div class ="rightLayout">
+            <br><br>
+            <button id="plusBtn" ><i class="fa-solid fa-plus"></i> new appointment</button> <br> <br> <br> <br>
+            <button id="plusBtn2" ><i class="fa-solid fa-plus"></i> new clothing item </button>
+        </div>
+        <div class="leftLayout">
+            <h4 class="inside" id="headers"> &nbsp &nbsp Remove Appointment Item By ID</h4>
+            <input type="text" placeholder="Search..." class="inside idSearch" id="searchBoxId">
+            <h4 class="inside" id="headers">Remove Clothing Item By ID</h4>
+            <input type="text" placeholder="Search..." class="inside idSearch" id="searchBoxIdTwo">
+        </div>
+        <div class="bottomLayout">
+            <button type="button" class="inside idEnter" id="idEnterBtn"> Enter </button>
+            <br>
+            <button type="button" class="inside idEnter" id="idEnterBtnTwo"> Enter </button>
+        </div>
+
+    </div>
+</div>
+</body>
+
+<script src="./storeManagerMain.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-analytics.js";
+    import { getDatabase, ref , set, query, orderByChild, equalTo, get, onValue, remove} from "https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDV0CfJW69B2rLY8vzzkUd1pZeOCVH-Tjk",
+        authDomain: "cs32-term-project-31ba1.firebaseapp.com",
+        databaseURL: "https://cs32-term-project-31ba1-default-rtdb.firebaseio.com",
+        projectId: "cs32-term-project-31ba1",
+        storageBucket: "cs32-term-project-31ba1.appspot.com",
+        messagingSenderId: "629420865855",
+        appId: "1:629420865855:web:c16a5566fbf2f6be9d7b8a",
+        measurementId: "G-7M0D1V353T"
+    };
+    const app = initializeApp(firebaseConfig)
+    const db = getDatabase(app) // <-- Pass in the initialized app
+    let data = null;
+    const subButton = document.getElementById("trySubmit");
+    const subButtonTwo = document.getElementById("trySubmitTwo");
+
+
+
+    subButton.addEventListener("click", writeAppointmentsData);
+    idEnterBtn.addEventListener("click", deleteAppointmentData);
+    idEnterBtnTwo.addEventListener("click", deleteClothingData);
+    subButtonTwo.addEventListener("click", addClothingData);
+    buildData();
+
+    //writes appointment data to firebase database
+    function writeAppointmentsData(){
+        let aptNo = 1;
+        if (data != null){
+            aptNo = data.length;}
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+        const date = document.getElementById("AppointmentDate").value;
+        const time = document.getElementById("AppointmentTime").value;
+        const itOne = document.getElementById("itemOne").value;
+        const itTwo = document.getElementById("itemTwo").value;
+        const itThree = document.getElementById("itemThree").value;
+        const reference = ref(db,'appointments/' + aptNo);
+
+        set(reference, {
+            FirstName: firstName,
+            LastName: lastName,
+            Date: date,
+            Time: time,
+            ItemOne: itOne,
+            ItemTwo: itTwo,
+            ItemThree: itThree
+        });
+    }
+    //deletes appointment data using id number, then rebuilds the table for display
+    function deleteAppointmentData(){
+        const toBeDeleted = searchBoxId.value;
+        console.log("hit");
+        remove(ref(db, 'appointments/' + toBeDeleted));
+        buildData();
+
+    }
+    //deletes clothing data using id number
+    function deleteClothingData(){
+        const toBeDeleted = searchBoxIdTwo.value;
+        remove(ref(db, 'clothes/' + toBeDeleted));
+    }
+
+    //adds clothing data to the firebase database using the user's inputs
+    function addClothingData(){
+        const article = document.getElementById("article").value;
+        const color = document.getElementById("color").value;
+        const image = document.getElementById("image").value;
+        const size = document.getElementById("size").value;
+        let clothesNum = 1;
+        console.log(clothesData.length);
+        if (clothesData != null){
+            clothesNum = clothesData.length;}
+        const reference = ref(db,'clothes/' + clothesNum);
+        set(reference, {
+            Article: article,
+            Color: color,
+            Image: image,
+            Size: size
+        });
+    }
+
+    //builds the table for display by going through the data in the firebase using queried data
+    const buildTable = () => {
+        const tableHead = document.getElementById("tableHead");
+        const tableBody = document.getElementById("tableBody");
+        console.log(data[1])
+        tableHead.innerHTML = ""
+        tableBody.innerHTML = ""
+        let keys = ["First Name","Last Name", "Appointment Date", "Appointment Time", "Item One", "Item Two", "Item Three"]
+        for (let i = 0; i < keys.length; i++) {
+            tableHead.innerHTML += `<th>${keys[i]}</th>`
+        }
+        for (let i = 1; i < data.length; i++) {
+            let keys2 = ["FirstName","LastName", "Date", "Time", "ItemOne", "ItemTwo", "ItemThree"]
+            let statement = ""
+            for (let j = 0; j < keys.length; j++) {
+                if(data[i] != null){
+                    statement += `<td>${data[i][keys2[j]]}</td>`
+                    console.log(data[i][keys2[j]])
+                }
+            }
+            tableBody.innerHTML += statement
+
+
+
+        }
+    }
+    //builds a display of the data by first querying from the database then displaying using helper function
+    async function buildData(){
+        const recentPostsRef = await get (query(ref(db, '/appointments'))).then((snapshot) => {
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                data = snapshot.val();
+                buildTable();
+            } else {
+                console.log("No data available");
+            }
+        })
+    }
+    //queries clothing data from database
+    let clothesNum = 1;
+    let clothesData = null;
+    const recentPosts = await get(query(ref(db, '/clothes'))).then((snapshot) => {
+        if (snapshot.exists()) {
+            console.log(snapshot.val());
+            clothesData = snapshot.val();
+        }
+    })
+
+
+</script>
+
+<script>
+    //filter function to search for appointments
+    function myFunction() {
+        var input, filter, table, tr, td, i;
+        input = document.getElementById("search-bar");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0]; // first name
+            td1 = tr[i].getElementsByTagName("td")[1]; // last name
+            if (td) {
+                if ( (td.innerHTML.toUpperCase().indexOf(filter) > -1) || (td1.innerHTML.toUpperCase().indexOf(filter) > -1) )  {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+    function writeClothesData(clothesID, article, color, size, imageUrl) {
+    const reference = ref(db,'clothes/' + clothesID);
+
+    set(reference, {
+        Article: article,
+        Color: color,
+        Size: size,
+        Image: imageUrl
+    });
+}
+
+function writeAppointmentsData(appointmentID, firstName, lastName, date, time, itemOne, itemTwo, itemThree) {
+    const reference = ref(db,'appointments/' + appointmentID);
+
+    set(reference, {
+        "FirstName": firstName,
+        "LastName": lastName,
+        "Date": date,
+        "Time": time,
+        "ItemOne": itemOne,
+        "ItemTwo": itemTwo,
+        "ItemThree": itemThree
+    });
+}
+
+//Clothes Data Mock Population
+writeClothesData("1", "Shirt", "Pink", "Small", "https://www.kids-world.com/images/CB790.jpg");
+writeClothesData("2", "Dress", "Blue", "Large", "https://media1.popsugar-assets.com/files/thumbor/_dShGFL5A5JuclOYUaLIsBtievM/fit-in/1024x1024/filters:format_auto-!!-:strip_icc-!!-/2014/05/23/894/n/1922564/c8fd1a615bb18d8b_hm-dress-thumb.jpg");
+writeClothesData("3", "Shorts", "Green", "Medium", "https://media.istockphoto.com/photos/green-men-shorts-for-swimming-picture-id697913358?k=20&m=697913358&s=612x612&w=0&h=OHSwN-ad3ZI0akZp7FHenyA6GE2-Rn0kU39h1MLbBdU=");
+writeClothesData("4", "Pants", "Black", "Large", "https://i.ebayimg.com/images/g/fv4AAOSwmCxgYpz5/s-l300.jpg");
+writeClothesData("5", "Shorts", "Red", "Small", "https://i.pinimg.com/originals/ff/0c/5d/ff0c5deb859170b33cccd3ef67a949ae.jpg");
+writeClothesData("6", "Scarf", "Yellow", "Small", "https://www.pashminawear.com/1316/yellow-cashmere-scarf-in-twill-weave.jpg");
+writeClothesData("7", "Coat", "Grey", "Medium", "https://media.cntraveler.com/photos/60088d408ebb4b589a89b54e/master/w_1280%2Cc_limit/LightweightJackets-2021-Uniqlo.jpg");
+writeClothesData("8", "Jacket", "Purple", "Medium", "https://images.stockx.com/images/Moncler-2-Genius-1952-Man-Amaltes-Short-Down-Jacket-Cornflower-Blue.jpg?fit=fill&bg=FFFFFF&w=700&h=500&fm=webp&auto=compress&q=90&dpr=2&trim=color&updated_at=1643734185");
+writeClothesData("9", "Shirt", "Beige", "Small", "https://www.differenta.com/media/produkty/92946/A.jpg");
+writeClothesData("10", "Pants", "White", "Large", "https://assets.vogue.com/photos/609d82bc3150cbc8d304e0d2/master/w_1280%2Cc_limit/slide_13.jpg");
+
+//Appointment Data Mock Population
+writeAppointmentsData(1, "Mai-Thanh", "Nguyen", "05/03/2022", "11:00 AM", "Medium Shirt", "Small Shorts", "Medium Pants");
+writeAppointmentsData(2, "Arvind", "Sridhar", "05/04/2022", "2:00 PM", "Small Jacket", "Medium Pants", "Medium Shirt");
+writeAppointmentsData(3, "Ethan", "Asis", "05/06/2022", "9:00 AM", "Large Shorts", "Small Jacket", "Medium Coat");
+writeAppointmentsData(4, "Omar", "Abdelhamid", "05/07/2022", "12:00 PM", "Small Scarf", "Medium Shorts", "Large Shirt");
+writeAppointmentsData(5, "Jackson", "Davis", "05/07/2022", "2:00 PM", "Large Pants", "Small Dress", "Small Scarf");
+writeAppointmentsData(6, "Natalee", "Amhaz", "05/08/2022", "10:00 AM", "Medium Dress", "Large Shirt", "Medium Shirt");
+</script>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Resident Appointment Look Up</title>
+    <link rel="stylesheet" href="Style/main2.css">
+    <link rel="stylesheet" href="Style/residentLookUp.css">
+    <link rel="icon" type="image/x-icon" href="../../Style/images/favicon.png">
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-analytics.js";
+        import { getDatabase, ref , set, query, orderByChild, equalTo, get, onValue } from "https://www.gstatic.com/firebasejs/9.7.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDV0CfJW69B2rLY8vzzkUd1pZeOCVH-Tjk",
+            authDomain: "cs32-term-project-31ba1.firebaseapp.com",
+            databaseURL: "https://cs32-term-project-31ba1-default-rtdb.firebaseio.com",
+            projectId: "cs32-term-project-31ba1",
+            storageBucket: "cs32-term-project-31ba1.appspot.com",
+            messagingSenderId: "629420865855",
+            appId: "1:629420865855:web:c16a5566fbf2f6be9d7b8a",
+            measurementId: "G-7M0D1V353T"
+        };
+
+        const app = initializeApp(firebaseConfig)
+        const db = getDatabase(app) // <-- Pass in the initialized app
+
+        console.log(db)
+        let data = null
+
+        const buildTable = () => {
+            const tableHead = document.getElementById("tableHead");
+            const tableBody = document.getElementById("tableBody");
+            console.log("first data: " + data[1])
+            tableHead.innerHTML = ""
+            tableBody.innerHTML = ""
+            let keys = ["First Name","Last Name", "Appointment Date", "Appointment Time", "Item One", "Item Two", "Item Three"]
+            for (let i = 0; i < keys.length; i++) {
+                tableHead.innerHTML += `<th>${keys[i]}</th>`
+            }
+            for (let i = 1; i < data.length; i++) {
+                let keys = ["FirstName","LastName", "Date", "Time", "ItemOne", "ItemTwo", "ItemThree"]
+                let statement = ""
+                for (let j = 0; j < keys.length; j++) {
+                    statement += `<td onclick="location.href='searchClothes.html'" >${data[i][keys[j]]}</td>`
+                }
+                tableBody.innerHTML += statement
+            }
+        }
+
+        const recentPostsRef = await get (query(ref(db, '/appointments'))).then((snapshot) => {
+            if (snapshot.exists()) {
+                data = snapshot.val();
+                buildTable()
+            } else {
+                console.log("No data available");
+            }
+        })
+
+    </script>
+    <script>
+        function filter() {
+            var input, filter, table, tr, td, i;
+            input = document.getElementById("search-bar");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0]; // first name
+                td1 = tr[i].getElementsByTagName("td")[1]; // last name
+                if (td) {
+                    if ( (td.innerHTML.toUpperCase().indexOf(filter) > -1) || (td1.innerHTML.toUpperCase().indexOf(filter) > -1) )  {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function getRowInfo(e){
+            const rowInfo = e.target.parentNode.innerText;
+            localStorage.setItem('residentInfo', rowInfo);
+        }
+    </script>
+</head>
+<body>
+
+<input type="checkbox" id="active">
+<label for="active" class="menu-btn"><span></span></label>
+<label for="active" class="close"></label>
+<div class="wrapper">
+    <ul>
+        <li><a href="../../landing.html">Home</a></li>
+        <li><a href="https://www.rescue.org/topic/refugee-crisis">About</a></li>
+        <li><a href="./searchClothes.html">Browse</a></li>
+        <li><a href="./residentLookUp.html">Back</a></li>
+
+    </ul>
+</div>
+
+<div id="searchAppointment">
+    <form class="search-container bob">
+        <input type="text" id="search-bar" onkeyup= "filter()" placeholder="What is your name?">
+        <img class="search-icon " src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png">
+    </form>
+    <div class="table-wrapper float">
+        <div class="fl-table">
+            <table id="table" onclick="getRowInfo(event)">
+                <thead>
+                <tr id="tableHead"></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src=""></script>
+</body>
+</html>
